@@ -5,9 +5,9 @@ import skimage.io as io
 import matplotlib.pyplot as plt
 
 
-ann_dir = '/home/qilei/.TEMP/teeth_data2/20211213_t3/annotations/instances_default.json'
+ann_dir = '/home/qilei/.TEMP/testteeth/annotations/instances_default.json'
 
-img_folder = '/home/qilei/.TEMP/teeth_data2/20211213_t3/images/'
+img_folder = '/home/qilei/.TEMP/testteeth/images/'
 
 coco = COCO(ann_dir)
 
