@@ -1,7 +1,7 @@
 import json
 from pycocotools.coco import COCO
 import os
-
+import skimage.io as io
 import matplotlib.pyplot as plt
 
 
