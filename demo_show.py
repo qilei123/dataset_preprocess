@@ -18,11 +18,11 @@ img = coco.loadImgs([ImgId])[0]
 img['file_name'] = img_folder+img['file_name']
 I = io.imread(img['file_name'])
 
-plt.axis('off')
-plt.imshow(I)
-plt.show()
 
 plt.imshow(I); plt.axis('off')
 annIds = coco.getAnnIds(imgIds=img['id'])
 anns = coco.loadAnns(annIds)
 coco.showAnns(anns)
+plt.axis('off')
+plt.imshow(I)
+plt.show()
