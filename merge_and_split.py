@@ -102,7 +102,48 @@ def generate_test():
 
     with open('annotations/t1_from_t2/test.json', 'w') as outfile:
         json.dump(temp_annotation, outfile)
+
+
+def split_train_test():
+    
+    annos_dir = "/home/qilei/.TEMP/TEETH3/annotations/"
+
+    temp_annotation1 = json.load(open(annos_dir+'instances_default.json'))
+    temp_annotation1["images"] = []
+    temp_annotation1["annotations"] = []
+
+    temp_annotation2 = json.load(open(annos_dir+'instances_default.json'))
+    temp_annotation2["images"] = []
+    temp_annotation2["annotations"] = []
+    
+    coco = COCO(annos_dir+'instances_default.json')
+    
+    count=0
+    
+    for ImgId in coco.getImgIds():
+        
+        if count%4==1:
+            temp_annotation = temp_annotation1
+        else:
+            temp_annotation = temp_annotation2
+
+        img = coco.loadImgs([ImgId])[0]
+
+        temp_annotation["images"].append(img)
+        
+        annIds =  coco.getAnnIds(ImgId)
+        anns = coco.loadAnns(annIds)
+
+        for ann in anns:
+            temp_annotation["annotations"].append(ann)  
+        count+=1
+    with open(annos_dir+'test_p1.json', 'w') as outfile:
+        json.dump(temp_annotation1, outfile)
+    with open(annos_dir+'train_p1.json', 'w') as outfile:
+        json.dump(temp_annotation2, outfile)
+
 if __name__=="__main__":
     #split_half()
-    generate_test()
+    #generate_test()
+    split_train_test()
                   
