@@ -1,11 +1,16 @@
 import json
+
+from pandas import merge_asof
 from pycocotools.coco import COCO
 import os
 def merge():
-    temp_annotation = json.load(open('annotations/t1_from_t2/test_updated.json'))
 
-    j1 = json.load(open('annotations/t1_from_t2/test_updated.json'))
-    j2 = json.load(open('annotations/t1_from_t2/train_updated.json'))
+    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/"
+
+    temp_annotation = json.load(open(anno_dir+'p1_instances_default.json'))
+
+    #j1 = json.load(open(anno_dir+'p1_instances_default.json'))
+    #j2 = json.load(open(anno_dir+'p2_instances_default.json'))
 
     temp_annotation["images"] = []
     temp_annotation["annotations"] = []
@@ -13,9 +18,9 @@ def merge():
     img_id = 1
     anno_id = 1
 
-    coco1 = COCO('annotations/t1_from_t2/test_updated.json')
+    coco1 = COCO(anno_dir+'p1_instances_default.json')
 
-    coco2 = COCO('annotations/t1_from_t2/train_updated.json')
+    coco2 = COCO(anno_dir+'p2_instances_default.json')
 
     for coco in [coco1,coco2]:
         for ImgId in coco.getImgIds():
@@ -35,7 +40,7 @@ def merge():
 
             img_id+=1
 
-    with open('annotations/t1_from_t2/all.json', 'w') as outfile:
+    with open(anno_dir+'instances_default.json', 'w') as outfile:
         json.dump(temp_annotation, outfile)
 
 def split_half():
@@ -145,5 +150,6 @@ def split_train_test():
 if __name__=="__main__":
     #split_half()
     #generate_test()
-    split_train_test()
+    #split_train_test()
+    merge()
                   
