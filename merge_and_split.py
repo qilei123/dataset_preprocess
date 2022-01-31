@@ -127,7 +127,7 @@ def split_train_test():
     
     for ImgId in coco.getImgIds():
         
-        if count%5==1:
+        if count%4==1:
             temp_annotation = temp_annotation1
         else:
             temp_annotation = temp_annotation2
@@ -142,14 +142,14 @@ def split_train_test():
         for ann in anns:
             temp_annotation["annotations"].append(ann)  
         count+=1
-    with open(annos_dir+'p1_test_1_4.json', 'w') as outfile:
+    with open(annos_dir+'test_1_3.json', 'w') as outfile:
         json.dump(temp_annotation1, outfile)
-    with open(annos_dir+'p1_train_1_4.json', 'w') as outfile:
+    with open(annos_dir+'train_1_3.json', 'w') as outfile:
         json.dump(temp_annotation2, outfile)
 
 if __name__=="__main__":
     #split_half()
     #generate_test()
-    #split_train_test()
-    merge()
+    split_train_test()
+    #merge()
                   
