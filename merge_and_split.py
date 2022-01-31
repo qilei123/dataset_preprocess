@@ -137,9 +137,9 @@ def split_train_test():
         for ann in anns:
             temp_annotation["annotations"].append(ann)  
         count+=1
-    with open(annos_dir+'p1_test_1.json', 'w') as outfile:
+    with open(annos_dir+'p1_test_1_4.json', 'w') as outfile:
         json.dump(temp_annotation1, outfile)
-    with open(annos_dir+'p1_train_4.json', 'w') as outfile:
+    with open(annos_dir+'p1_train_1_4.json', 'w') as outfile:
         json.dump(temp_annotation2, outfile)
 
 if __name__=="__main__":
