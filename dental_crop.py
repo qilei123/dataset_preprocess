@@ -44,7 +44,7 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
             bound_box = [0, 0, image.shape[1], image.shape[0]]
 
 
-        cropped_image = image[bound_box[0]:bound_box[2],bound_box[1]:bound_box[3]]
+        cropped_image = image[bound_box[1]:bound_box[3],bound_box[0]:bound_box[2]]
         
         for ann in anns:
             ann['bbox'][0]-=bound_box[0]
