@@ -5,7 +5,7 @@ import skimage.io as io
 import matplotlib.pyplot as plt
 
 
-ann_dir = '/home/qilei/.TEMP/TEETH3/annotations/test_1_3_crop.json'
+ann_dir = '/home/qilei/.TEMP/TEETH3/annotations/train_1_3_crop.json'
 
 img_folder = '/home/qilei/.TEMP/TEETH3/images_crop1/'
 
