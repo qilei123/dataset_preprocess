@@ -91,7 +91,8 @@ def redefine_id(ids_map,cat_names,anno_dir):
         for ann in anns:
             ann['category_id'] = ids_map[ann['category_id']]
             temp_annotation['annotations'].append(ann)
-
+    print(anno_dir)
+    print(anno_dir.replace('.json','_2cats.json'))
     with open(anno_dir.replace('.json','_2cats.json'), 'w') as outfile:
         json.dump(temp_annotation, outfile)            
 
@@ -111,9 +112,9 @@ if __name__=="__main__":
     ids_map = {1:1,2:2,3:2,4:2,5:2,6:2,7:2,8:2,9:2,10:2}
     cat_names = {1:"normal",2:"abnormal"}
     
-    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/train_1_3_crop.json"
-    redefine_id(ids_map,cat_names,anno_dir)
-    
+    #anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/train_1_3_crop.json"
+    #redefine_id(ids_map,cat_names,anno_dir)
+
     anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/test_1_3_crop.json"
     redefine_id(ids_map,cat_names,anno_dir)
 
