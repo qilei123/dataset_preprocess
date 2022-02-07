@@ -64,7 +64,7 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
         json.dump(temp_annotation, outfile)    
 
 if __name__=="__main__":
-    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/test_1_3.json"
+    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/train_1_3.json"
     imgs_dir = "/home/qilei/.TEMP/TEETH3/images/"
     croped_imgs_dir = "/home/qilei/.TEMP/TEETH3/images_crop1/"
     dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir)
