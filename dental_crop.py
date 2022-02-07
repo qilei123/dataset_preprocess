@@ -58,7 +58,7 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
 
         img_dir = os.path.join(croped_imgs_dir,img['file_name'])
         os.makedirs(img_dir.replace(os.path.basename(img_dir),''),exist_ok=False)
-        cv2.imwrite(cropped_image,os.path.join(croped_imgs_dir,img['file_name']))            
+        cv2.imwrite(os.path.join(croped_imgs_dir,img['file_name']),cropped_image)            
 
     with open(anno_dir.replace('.json','_crop.json'), 'w') as outfile:
         json.dump(temp_annotation, outfile)    
