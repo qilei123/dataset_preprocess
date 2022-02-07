@@ -32,7 +32,7 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
             
             bound_y2 = bound_y2 if bound_y2>ann['bbox'][1]+ann['bbox'][3] else ann['bbox'][1]+ann['bbox'][3]            
 
-        temp_annotation["images"].append(img)
+        
         image = cv2.imread(os.path.join(imgs_dir,img['file_name']))
         
         if len(anns)>0:
@@ -46,6 +46,11 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
 
         cropped_image = image[bound_box[1]:bound_box[3],bound_box[0]:bound_box[2]]
         
+        img['width'] = int(bound_box[2]-bound_box[0])
+        img['height'] = int(bound_box[3]-bound_box[1])
+
+        temp_annotation["images"].append(img)
+
         for ann in anns:
             ann['bbox'][0]-=int(bound_box[0])
             ann['bbox'][1]-=int(bound_box[1])
