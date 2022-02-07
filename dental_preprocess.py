@@ -71,8 +71,34 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
     with open(anno_dir.replace('.json','_crop.json'), 'w') as outfile:
         json.dump(temp_annotation, outfile)    
 
+def redefine_id(ids_map,cat_names,anno_dir):
+
+    temp_annotation = json.load(open(anno_dir))
+    coco = COCO(anno_dir)
+    temp_annotation["annotations"] = []    
+
+    temp_annotation['categories']=[]
+
+    for id in cat_names:
+        new_cats = {"id": id, "name": cat_names[id], "supercategory": ""}
+        temp_annotation['categories'].append(new_cats)
+
+    for ImgId in coco.getImgIds():
+        img = coco.loadImgs([ImgId])[0]
+
+        annIds =  coco.getAnnIds(ImgId)
+        anns = coco.loadAnns(annIds)
+        for ann in anns:
+            ann['category_id'] = ids_map[ann['category_id']]
+            temp_annotation['annotations'].append(ann)
+
+    with open(anno_dir.replace('.json','_2cats.json'), 'w') as outfile:
+        json.dump(temp_annotation, outfile)            
+
 if __name__=="__main__":
     
+    # These are for crop1 dataset generating
+    '''
     imgs_dir = "/home/qilei/.TEMP/TEETH3/images/"
     croped_imgs_dir = "/home/qilei/.TEMP/TEETH3/images_crop1/"
 
@@ -80,4 +106,14 @@ if __name__=="__main__":
     dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir)
 
     anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/test_1_3.json"
-    dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir)    
+    dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir)   
+    ''' 
+    ids_map = {1:1,2:2,3:2,4:2,5:2,6:2,7:2,8:2,9:2,10:2}
+    cat_names = {1:"normal",2:"abnormal"}
+    
+    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/train_1_3_crop.json"
+    redefine_id(ids_map,cat_names,anno_dir)
+    
+    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/test_1_3_crop.json"
+    redefine_id(ids_map,cat_names,anno_dir)
+
