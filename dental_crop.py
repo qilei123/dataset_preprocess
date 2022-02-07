@@ -46,17 +46,20 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
 
         cropped_image = image[bound_box[1]:bound_box[3],bound_box[0]:bound_box[2]]
         
+        # set the size of new cropped images in the annotation with integer
         img['width'] = int(bound_box[2]-bound_box[0])
         img['height'] = int(bound_box[3]-bound_box[1])
 
         temp_annotation["images"].append(img)
 
         for ann in anns:
-            ann['bbox'][0]-=int(bound_box[0])
-            ann['bbox'][1]-=int(bound_box[1])
+            # fix the bounding box position according to the cropped coordination
+            ann['bbox'][0] = round(ann['bbox'][0]-bound_box[0],2)
+            ann['bbox'][1] = round(ann['bbox'][1]-bound_box[1],2)
 
+            # fix the polygon coordination
             for idx,xy in enumerate(ann['segmentation'][0]):
-                ann['segmentation'][0][idx] = int(xy - bound_box[idx%2])
+                ann['segmentation'][0][idx] = round(xy - bound_box[idx%2],2)
             
             temp_annotation['annotations'].append(ann)
 
@@ -69,7 +72,12 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
         json.dump(temp_annotation, outfile)    
 
 if __name__=="__main__":
-    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/train_1_3.json"
+    
     imgs_dir = "/home/qilei/.TEMP/TEETH3/images/"
     croped_imgs_dir = "/home/qilei/.TEMP/TEETH3/images_crop1/"
+
+    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/train_1_3.json"
     dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir)
+
+    anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/test_1_3.json"
+    dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir)    
