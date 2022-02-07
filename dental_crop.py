@@ -47,11 +47,11 @@ def dental_crop_with_max_bounds(anno_dir,imgs_dir,croped_imgs_dir):
         cropped_image = image[bound_box[1]:bound_box[3],bound_box[0]:bound_box[2]]
         
         for ann in anns:
-            ann['bbox'][0]-=bound_box[0]
-            ann['bbox'][1]-=bound_box[1]
+            ann['bbox'][0]-=int(bound_box[0])
+            ann['bbox'][1]-=int(bound_box[1])
 
             for idx,xy in enumerate(ann['segmentation'][0]):
-                ann['segmentation'][0][idx] = xy - bound_box[idx%2]
+                ann['segmentation'][0][idx] = int(xy - bound_box[idx%2])
             
             temp_annotation['annotations'].append(ann)
 
