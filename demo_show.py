@@ -5,9 +5,9 @@ import skimage.io as io
 import matplotlib.pyplot as plt
 
 
-ann_dir = '/home/qilei/.TEMP/TEETH3/annotations/train_1_3_crop.json'
+ann_dir = '/data3/qilei_chen/DATA/trans_drone/annotations/test_AW_obb.json'
 
-img_folder = '/home/qilei/.TEMP/TEETH3/images_crop1/'
+img_folder = '/data3/qilei_chen/DATA/trans_drone/images/'
 
 coco = COCO(ann_dir)
 
@@ -15,7 +15,10 @@ ImgId = 12
 
 img = coco.loadImgs([ImgId])[0]
 
-img['file_name'] = img_folder+img['file_name']
+if 'Wide' in img['file_name']:
+    img['file_name'] = img['file_name'].replace('andover','andover_wide')
+
+img['file_name'] = os.path.join(img_folder,img['file_name'])
 I = io.imread(img['file_name'])
 
 
