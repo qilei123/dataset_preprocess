@@ -35,9 +35,9 @@ def change_video_names():
 
 def change_video_names1():
     root_dir = '/data3/qilei_chen/DATA/changjing_issues/'
-    video_dirs = glob.glob(os.path.join(root_dir,'*_mp4'))+glob.glob(os.path.join(root_dir,'*_avi'))
+    video_dirs = glob.glob(os.path.join(root_dir,'*mp4'))+glob.glob(os.path.join(root_dir,'*avi'))
 
-    #map_name_records = open(os.path.join(root_dir,'video_names_map.txt'),'w')
+    map_name_records = open(os.path.join(root_dir,'video_names_map_bk.txt'))
 
     #new_base_name = '20220301_1024_010'
 
@@ -51,5 +51,20 @@ def change_video_names1():
         print(video_dir)
         print(new_video_dir)
 
+def change_video_names2():
+    root_dir = '/data3/qilei_chen/DATA/changjing_issues/'
+    video_dirs = glob.glob(os.path.join(root_dir,'*mp4'))+glob.glob(os.path.join(root_dir,'*avi'))
+
+    map_name_records = open(os.path.join(root_dir,'video_names_map_bk.txt'))
+
+    #new_base_name = '20220301_1024_010'
+    line = map_name_records.readline()
+
+    while line:
+        eles = line[:-1].split(' ')
+        file_dir = os.path.join(root_dir,eles[1])
+        o_file_dir = os.path.join(root_dir,eles[0])
+        os.rename(file_dir,o_file_dir)
+
 if __name__=="__main__":
-    change_video_names1()
+    change_video_names2()
