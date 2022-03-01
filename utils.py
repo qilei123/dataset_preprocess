@@ -35,7 +35,7 @@ def change_video_names():
 
 def change_video_names1():
     root_dir = '/data3/qilei_chen/DATA/changjing_issues/'
-    video_dirs = glob.glob(os.path.join(root_dir,'*.mp3'))+glob.glob(os.path.join(root_dir,'*.avi'))
+    video_dirs = glob.glob(os.path.join(root_dir,'*.mp4'))+glob.glob(os.path.join(root_dir,'*.avi'))
     for video_dir in video_dirs:
         print(video_dir)
 if __name__=="__main__":
