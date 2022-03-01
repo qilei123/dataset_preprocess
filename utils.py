@@ -46,6 +46,7 @@ def change_video_names1():
         new_video_dir = os.path.join(root_dir,new_base_name+str(count)+'_'+video_dir[-3:])
         new_video_name = os.path.basename(new_video_dir)
         map_name_records.write(video_name+' '+new_video_name+'\n')
+        os.rename(video_dir,new_video_dir)
         print(video_dir)
         print(new_video_dir)
 
