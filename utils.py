@@ -62,6 +62,8 @@ def change_video_names2():
 
     while line:
         eles = line[:-1].split(' ')
+        eles[1] = eles[1].replace('_mp4','.mp4')
+        eles[1] = eles[1].replace('_avi','.avi')
         file_dir = os.path.join(root_dir,eles[1])
         o_file_dir = os.path.join(root_dir,eles[0])
         os.rename(file_dir,o_file_dir)
