@@ -66,7 +66,8 @@ def change_video_names2():
         eles[1] = eles[1].replace('_avi','.avi')
         file_dir = os.path.join(root_dir,eles[1])
         o_file_dir = os.path.join(root_dir,eles[0])
-        os.rename(file_dir,o_file_dir)
+        if os.path.exists(file_dir):
+            os.rename(file_dir,o_file_dir)
 
 if __name__=="__main__":
     change_video_names2()
