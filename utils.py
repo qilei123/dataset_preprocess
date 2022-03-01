@@ -68,6 +68,7 @@ def change_video_names2():
         o_file_dir = os.path.join(root_dir,eles[0])
         if os.path.exists(file_dir):
             os.rename(file_dir,o_file_dir)
+        line = map_name_records.readline()
 
 if __name__=="__main__":
     change_video_names2()
