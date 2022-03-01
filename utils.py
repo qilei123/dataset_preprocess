@@ -1,5 +1,5 @@
 import os
-
+import glob
 def change_video_names():
     records = open('temp_datas/changweijing_issues1.txt',encoding="utf8")
     #map_records = open('temp_datas/changweijing_issues_filenames_map.txt','w',encoding="utf8")
@@ -33,7 +33,10 @@ def change_video_names():
         line = records.readline()
     
 
-
-
+def change_video_names1():
+    root_dir = '/data3/qilei_chen/DATA/changjing_issues/'
+    video_dirs = glob.glob(os.path.join(root_dir,'*.mp3'))+glob.glob(os.path.join(root_dir,'*.avi'))
+    for video_dir in video_dirs:
+        print(video_dir)
 if __name__=="__main__":
-    change_video_names()
+    change_video_names1()
