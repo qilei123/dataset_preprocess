@@ -23,7 +23,7 @@ def change_video_names():
             else:
                 org_video_name = os.path.join(video_dir,new_line_eles[0]+".mp3")
   
-            #os.rename(org_video_name,org_video_name.replace(new_line_eles[0],new_line_eles[1]))
+            os.rename(org_video_name,org_video_name.replace(new_line_eles[0],new_line_eles[1]))
             print(org_video_name)
             print(org_video_name.replace(new_line_eles[0],new_line_eles[1]))
 
