@@ -37,15 +37,16 @@ def change_video_names1():
     root_dir = '/data3/qilei_chen/DATA/changjing_issues/'
     video_dirs = glob.glob(os.path.join(root_dir,'*_mp4'))+glob.glob(os.path.join(root_dir,'*_avi'))
 
-    map_name_records = open(os.path.join(root_dir,'video_names_map.txt'),'w')
+    #map_name_records = open(os.path.join(root_dir,'video_names_map.txt'),'w')
 
-    new_base_name = '20220301_1024_010'
+    #new_base_name = '20220301_1024_010'
 
     for count,video_dir in enumerate(video_dirs):
         video_name = os.path.basename(video_dir)
-        new_video_dir = os.path.join(root_dir,new_base_name+str(count)+'.'+video_dir[-3:])
-        new_video_name = os.path.basename(new_video_dir)
-        map_name_records.write(video_name+' '+new_video_name+'\n')
+        #new_video_dir = os.path.join(root_dir,new_base_name+str(count)+'.'+video_dir[-3:])
+
+        new_video_dir = video_dir.replace(video_dir[-4:],"."+video_dir[-3:])
+        #map_name_records.write(video_name+' '+new_video_name+'\n')
         os.rename(video_dir,new_video_dir)
         print(video_dir)
         print(new_video_dir)
