@@ -218,7 +218,6 @@ def update_t1_from_t2():
     with open(test_save_dir, 'w') as outfile:
         json.dump(test_temp_annotation, outfile)  
 
-
 def get_instance_count(json_dir,cat_names=["Normal","Caries","Implant","Inlay","Pontic","Residual root",
                                 "Retainer","Teeth filling","Veneer","Crown"]):
     coco = COCO(json_dir)

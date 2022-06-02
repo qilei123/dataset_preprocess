@@ -45,7 +45,7 @@ def images_extraction():
 
                     img_name = video_name+"_"+str(frame_index)+".jpg"
 
-                    cv2.imwrite("/home/qilei/DATASETS/trans_drone/trans_drone_videos2_images/"+img_name,frame)
+                    cv2.imwrite("/home/qilei/DATASETS/trans_drone/trans_drone_videos2_images2/"+img_name,frame)
 
 
 
