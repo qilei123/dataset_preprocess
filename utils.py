@@ -1,7 +1,10 @@
 import os
 import glob
+from webbrowser import get
 import zipfile
 import xml.etree.ElementTree as ET
+import cv2
+import sys
 
 def change_video_names():
     records = open('temp_datas/changweijing_issues1.txt',encoding="utf8")
@@ -119,6 +122,67 @@ def tally_fangdaweijing():
     #unzip_files(data_dir)
     parse_xml_ann(data_dir)
 
+def get_adenoma(data_dir):
+    record_file = open(os.path.join(data_dir, "test.txt"), "r")
+
+    record_line = record_file.readline()
+
+    label_dic =  {0:"adenoma",1:"noneadenoma"}
+
+    while record_line:
+        
+        src_file_dir = record_line[:-3]
+        label = int(record_line[-2])
+
+        target_dir = os.path.join(data_dir,"val",label_dic[label])
+
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+
+        command = "cp "+os.path.join(data_dir,"test",src_file_dir)+" "+target_dir
+        record_line = record_file.readline()
+def generate_clip_frames(video_dir,period=[0,200]) :
+    
+    sys.path.append("D:\\DEVELOPMENT\\train_img_classifier")
+
+    from img_crop import crop_img
+
+    cap = cv2.VideoCapture(video_dir)
+
+    frameRate = int(cap.get(cv2.CAP_PROP_FPS))
+    codec = cv2.VideoWriter_fourcc(*'XVID')
+    save_name = video_dir[:-4] + "_crop.avi"
+    
+
+    save_dir = video_dir.replace(".avi","")
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    success,frame = cap.read()
+
+    frame_index=0
+    frame,roi = crop_img(frame)
+    outputCap = cv2.VideoWriter(save_name, codec, frameRate, (int(roi[2]-roi[0]),int(roi[3]-roi[1])) )
+
+    while success:
+
+        #if frame_index>period[0] and frame_index<period[1] :
+        #    cv2.imwrite(os.path.join(save_dir,str(frame_index)+".jpg"),frame)
+
+        frame_index+=1
+
+        #if frame_index>period[1]:
+        #    break
+        outputCap.write(frame)
+        success,frame = cap.read()
+        if success:
+            frame = crop_img(frame,roi)
+        
+
 if __name__=="__main__":
     #change_video_names2()
-    tally_fangdaweijing()
+    #tally_fangdaweijing()
+    #get_adenoma("/data3/qilei_chen/DATA/polyp_xinzi/D1_D2")
+
+    generate_clip_frames("E:/DATASET/Camera_motion_estimation/20211027_1626_1631_c_2.42-5.23.avi")
