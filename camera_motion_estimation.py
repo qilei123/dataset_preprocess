@@ -170,8 +170,7 @@ def process_video():
                 motion_type = 'Panning' if motion > 0.6 else 'Trucking'
                 
             count = 0
-            
-        
+
         # put values on the frame
         #     cv.putText(next_gray, angle, (50,100), font, fontScale, fontColor, lineType)
         #     cv.putText(next_gray, translation, (50,150), font, fontScale, fontColor, lineType)
