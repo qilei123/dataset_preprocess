@@ -1,13 +1,14 @@
 import os
 import time
 import math
+import cv2
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import mode
 from sklearn.cluster import KMeans
 
-# This function allows to calculate optical flow trajectories (Don't remember where I actually found the source code)
+# This function allows to calculate optical flow trajectories
 # The code also allows to specify step value. The greater the value the more sparse the calculation and visualisation
 def calc_angl_n_transl(img, flow, step=8):
     
@@ -37,7 +38,7 @@ def calc_angl_n_transl(img, flow, step=8):
         length = math.hypot(int(x2) - int(x1), - int(y2) + int(y1))
         translation.append(length)
         angles.append(angle)
-    
+    #print(translation)
     return np.array(angles), np.array(translation), lines
 
 # function for drawing optical flow trajectories 
@@ -79,13 +80,13 @@ def estimate_motion(angles, translation):
     '''
     
     # Get indices of nonzero opical flow values. We'll use just them
-    nonzero = np.where(translation > 0)
+    nonzero = np.where(translation >= 0)
     
     # Whether non-zero value is close to zero or not. Should be set as a thershold
     steady = np.mean(translation) < 0.5
     
     translation = translation[nonzero]
-    print(translation)
+
     transl_mode = mode(translation)[0][0]
     
     angles = angles[nonzero]
@@ -99,9 +100,13 @@ def estimate_motion(angles, translation):
     # cluster optical flow values and find out how different these cluster are
     # big difference (i.e. big ratio value) corresponds to panning, otherwise - trucking
     inliers = [tuple([inlier]) for inlier in translations]
-    k_means = KMeans(n_clusters=3, random_state=0).fit(inliers)
+    k_means = KMeans(n_clusters=1, random_state=0).fit(inliers)
     centers = sorted(k_means.cluster_centers_)
-    ratio = centers[0] / centers[-1]
+    #print(centers)
+    if centers[0]>0:
+        ratio = centers[0] / centers[-1]
+    else:
+        ratio = [0]
     
     return ang_mode, transl_mode, ratio, steady
 
@@ -141,7 +146,14 @@ def process_video():
         
         if not ret:
             break
-            
+        scale_percent = 50 # percent of original size
+        width = int(nxt.shape[1] * scale_percent / 100)
+        height = int(nxt.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        
+        # resize image
+        nxt = cv2.resize(nxt, dim, interpolation = cv2.INTER_AREA)        
+
         # if the image is colored
         if len(prvs.shape) == 3:
             prvs_gray = cv.cvtColor(prvs.copy(), cv.COLOR_BGR2GRAY)
@@ -154,9 +166,9 @@ def process_video():
             
             # calculate optical flow
             flow = cv.calcOpticalFlowFarneback(prvs_gray, next_gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-
+            #print(flow.shape)
             # calculate trajectories and analyse them
-            angles, transl, lines = calc_angl_n_transl(prvs_gray, flow)
+            angles, transl, lines = calc_angl_n_transl(prvs_gray, flow, step=2)
             ang_mode, transl_mode, ratio, steady = estimate_motion(angles, transl)
 
             # draw trajectories on the frame
@@ -169,7 +181,7 @@ def process_video():
             if isinstance(motion, float):
                 motion_type = 'Panning' if motion > 0.6 else 'Trucking'
                 
-            count = 0
+            #count = 0
 
         # put values on the frame
         #     cv.putText(next_gray, angle, (50,100), font, fontScale, fontColor, lineType)
