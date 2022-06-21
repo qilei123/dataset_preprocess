@@ -92,7 +92,7 @@ def parse_xml_ann(folder_dir) :
 
     for folder in folder_list:
         xml_dir  = os.path.join(folder,"annotations.xml")
-
+        
         xml_tree = ET.parse(xml_dir)
 
         xml_root = xml_tree.getroot()
@@ -118,8 +118,8 @@ def parse_xml_ann(folder_dir) :
     print(count_matrix)
 
 def tally_fangdaweijing():
-    data_dir = "E:\\DATASET\\放大胃镜\\放大胃镜图片筛选\\2020\\20220512"
-    #unzip_files(data_dir)
+    data_dir = "E:\\DATASET\\放大胃镜\\放大胃镜图片筛选\\2020\\20220615"
+    unzip_files(data_dir)
     parse_xml_ann(data_dir)
 
 def get_adenoma(data_dir):
@@ -182,7 +182,7 @@ def generate_clip_frames(video_dir,period=[0,200]) :
 
 if __name__=="__main__":
     #change_video_names2()
-    #tally_fangdaweijing()
+    tally_fangdaweijing()
     #get_adenoma("/data3/qilei_chen/DATA/polyp_xinzi/D1_D2")
 
-    generate_clip_frames("E:/DATASET/Camera_motion_estimation/20211027_1626_1631_c_2.42-5.23.avi")
+    #generate_clip_frames("E:/DATASET/Camera_motion_estimation/20211027_1626_1631_c_2.42-5.23.avi")

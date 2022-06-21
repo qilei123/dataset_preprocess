@@ -4,7 +4,6 @@ import os
 def images_extraction():
     video_list = glob.glob("/home/qilei/DATASETS/trans_drone/trans_drone_videos2/*.MOV")
 
-
     steps=240
 
     offset = 120
@@ -13,11 +12,7 @@ def images_extraction():
 
         cap = cv2.VideoCapture(video_dir)
 
-
-
         frame_index = 1
-
-
 
         cap.set(cv2.CAP_PROP_POS_FRAMES,frame_index)
 
