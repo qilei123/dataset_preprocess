@@ -152,7 +152,7 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
                     "category_id": 1, 
                     "segmentation": [[]], 
                     "area": 0, 
-                    "bbox": [968.12, 663.36, 123.89, 237.3], 
+                    "bbox": [], 
                     "iscrowd": 0, 
                     "attributes": {"Num": 16.0, "occluded": 0}}
 
@@ -212,7 +212,7 @@ if __name__=="__main__":
 
 
     imgs_dir = "/home/qilei/.TEMP/TEETH3/images/"
-    croped_imgs_dir = "/home/qilei/.TEMP/TEETH3/images_crop1/"
+    #croped_imgs_dir = "/home/qilei/.TEMP/TEETH3/images_crop1/"
 
     anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/train_1_3.json"
     generate_dental_roi_with_max_bounds(anno_dir,imgs_dir)
