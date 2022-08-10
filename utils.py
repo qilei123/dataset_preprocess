@@ -13,7 +13,7 @@ from pycocotools.coco import COCO
 
 sys.path.append("D:\\DEVELOPMENT\\train_img_classifier")
 
-from img_crop import crop_img
+
 
 def change_video_names():
     records = open('temp_datas/changweijing_issues1.txt',encoding="utf8")
@@ -162,8 +162,7 @@ def get_adenoma(data_dir):
         command = "cp "+os.path.join(data_dir,"test",src_file_dir)+" "+target_dir
         record_line = record_file.readline()
 def generate_clip_frames(video_dir,period=[0,200]) :
-    
-
+    from img_crop import crop_img
     cap = cv2.VideoCapture(video_dir)
 
     frameRate = int(cap.get(cv2.CAP_PROP_FPS))
