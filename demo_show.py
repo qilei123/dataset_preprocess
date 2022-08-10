@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import json
 from pycocotools.coco import COCO
 import os
@@ -29,4 +30,5 @@ anns = coco.loadAnns(annIds)
 coco.showAnns(anns,draw_bbox=True)
 plt.axis('off')
 plt.imshow(I)
+
 plt.show()

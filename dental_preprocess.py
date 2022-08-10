@@ -135,7 +135,7 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
             bound_y2 = bound_y2 if bound_y2>ann['bbox'][1]+ann['bbox'][3] else ann['bbox'][1]+ann['bbox'][3]            
 
         
-        #image = cv2.imread(os.path.join(imgs_dir,img['file_name']))
+        image = cv2.imread(os.path.join(imgs_dir,img['file_name']))
         
         if len(anns)>0:
 
@@ -219,6 +219,4 @@ if __name__=="__main__":
 
     anno_dir = "/home/qilei/.TEMP/TEETH3/annotations/test_1_3.json"
     generate_dental_roi_with_max_bounds(anno_dir,imgs_dir)  
-
-
 
