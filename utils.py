@@ -1,10 +1,19 @@
+#from curses import has_colors
 import os
 import glob
+from turtle import width
 from webbrowser import get
 import zipfile
 import xml.etree.ElementTree as ET
 import cv2
 import sys
+import random
+import numpy as np
+from pycocotools.coco import COCO
+
+sys.path.append("D:\\DEVELOPMENT\\train_img_classifier")
+
+from img_crop import crop_img
 
 def change_video_names():
     records = open('temp_datas/changweijing_issues1.txt',encoding="utf8")
@@ -82,15 +91,16 @@ def unzip_files(file_dir):
         with zipfile.ZipFile(file,"r") as zip_ref:
             zip_ref.extractall(file.replace(".zip",""))        
 
-def parse_xml_ann(folder_dir) :
+def parse_xml_ann(folder_dir,record = None) :
     folder_list = glob.glob(os.path.join(folder_dir,"*[!.zip]"))
     layer1_labels = ["NBI+放大","白光","NBI+非放大"]
-    layer2_labels = ["萎缩性胃炎","肠化","低级别","高级别","癌","低级别+高级别"]
+    layer2_labels = ["萎缩性胃炎","肠化","低级别","高级别","癌变","低级别+高级别"]
 
     count_matrix = [[0 for x in range(len(layer2_labels))] for y in range(len(layer1_labels))]
 
 
     for folder in folder_list:
+        #print(os.path.basename(folder))
         xml_dir  = os.path.join(folder,"annotations.xml")
         
         xml_tree = ET.parse(xml_dir)
@@ -100,7 +110,7 @@ def parse_xml_ann(folder_dir) :
         for child in xml_root.iter("image"):
 
             tags = child.findall("tag")
-
+            #print(child.attrib["name"])
             layer1_index = -1
             layer2_index = -1
 
@@ -114,13 +124,23 @@ def parse_xml_ann(folder_dir) :
 
             if layer1_index>=0 and layer2_index>=0:
                 count_matrix[layer1_index][layer2_index]+=1
-
+                record.write(os.path.join(folder,"images",child.attrib["name"])+" "+os.path.basename(folder)+" "+layer1_labels[layer1_index]+" "+layer2_labels[layer2_index]+"\n")
     print(count_matrix)
 
 def tally_fangdaweijing():
-    data_dir = "E:\\DATASET\\放大胃镜\\放大胃镜图片筛选\\2020\\20220615"
-    unzip_files(data_dir)
-    parse_xml_ann(data_dir)
+    
+    folder_dir_list = ["E:\\DATASET\\放大胃镜\\放大胃镜图片筛选\\2015_放大胃镜标注\\",
+                            "E:\\DATASET\\放大胃镜\\放大胃镜图片筛选\\2017_放大胃镜标注\\",
+                            "E:\\DATASET\\放大胃镜\\放大胃镜图片筛选\\2020\\",
+                            "E:\\DATASET\\放大胃镜\\放大胃镜图片筛选\\2021\\"]
+    
+    record = open("E:/DATASET/放大胃镜/放大胃镜图片筛选/2015_2017_2020_2021_list.log", "w", encoding="utf-8")
+
+    for folder_dir in folder_dir_list:
+        for data_dir in glob.glob(folder_dir+"*"):
+            print(data_dir)
+            #unzip_files(data_dir)
+            parse_xml_ann(data_dir, record)
 
 def get_adenoma(data_dir):
     record_file = open(os.path.join(data_dir, "test.txt"), "r")
@@ -143,9 +163,6 @@ def get_adenoma(data_dir):
         record_line = record_file.readline()
 def generate_clip_frames(video_dir,period=[0,200]) :
     
-    sys.path.append("D:\\DEVELOPMENT\\train_img_classifier")
-
-    from img_crop import crop_img
 
     cap = cv2.VideoCapture(video_dir)
 
@@ -180,9 +197,217 @@ def generate_clip_frames(video_dir,period=[0,200]) :
             frame = crop_img(frame,roi)
         
 
+def random_rename(folder_dir1,folder_dir2):
+
+    file_list1 = glob.glob(os.path.join(folder_dir1,"*"))
+    file_list2 = glob.glob(os.path.join(folder_dir2,"*"))
+    
+    file_list = file_list1 + file_list2
+    random.shuffle(file_list)
+
+    file_map_record1 = open(folder_dir1+".txt", "w",encoding="utf-8")
+    file_map_record2 = open(folder_dir2+".txt", "w",encoding="utf-8")
+
+    for index,file in enumerate(file_list):
+        if folder_dir1 in file:
+            folder_dir = folder_dir1
+            file_map_record = file_map_record1
+        else:
+            folder_dir = folder_dir2
+            file_map_record = file_map_record2
+        os.rename(file,os.path.join(folder_dir,str(index).zfill(5)+".jpg"))
+        file_map_record.write(os.path.basename(file)+"  "+str(index).zfill(5)+".jpg\n")
+
+
+def generate_fangdaweijing(folder_dir,file_names, key_word = 'NBI+放大'):
+
+    labels = ["萎缩性胃炎","肠化","低级别","高级别","癌变"]
+    label_ids = [0,0,1,2,3]
+
+    records = dict()
+
+    for file_name in file_names:
+
+        record_file = open(os.path.join(folder_dir,file_name),encoding="utf-8")
+
+        line = record_file.readline()
+
+        while line:
+            eles = line.split(' ')
+            if len(eles)==2:
+                if key_word in eles[0]:
+                    key_id = eles[1][:-2]
+                    if not key_id in records:
+                        records[key_id] = []
+                    records[key_id].append(eles[0])
+            elif len(eles)==4:
+                if key_word == eles[2]:
+                    key_id = eles[1][:-2]
+                    if not key_id in records:
+                        records[key_id] = []
+                    records[key_id].append([eles[0],eles[3]])                
+            line = record_file.readline()
+    count=0
+    print(len(records))
+    exit()
+    train_record_file = open(os.path.join(folder_dir,'v3_baiguang1.txt'),'w',encoding="utf-8")
+    test_record_file = open(os.path.join(folder_dir,'v3_baiguang2.txt'),'w',encoding="utf-8")
+    for key_id in records:
+        if count%4==0:
+            record_file = test_record_file
+        else:
+            record_file = train_record_file
+        for image_file in records[key_id]:
+            if isinstance(image_file,str):
+                for label_index, label in enumerate(labels) :
+                    
+                        if label in image_file:
+                            
+                            record_file.write(image_file+' '+str(label_ids[label_index])+"\n")    
+                            break             
+            elif isinstance(image_file,list):  
+                #print(image_file) 
+                for label_index, label in enumerate(labels) : 
+                    
+                    if label == image_file[1][:-1]:
+                        
+                        record_file.write(image_file[0]+' '+str(label_ids[label_index])+"\n")
+                        break
+            
+        count+=1
+
+def CropImg(image,roi=None):
+    if roi is None:
+        height, width, d = image.shape
+
+        pixel_thr = 10
+        
+        w_start=0
+        while True:
+            if np.sum(image[int(height/2),int(w_start),:])/d>pixel_thr:
+                break
+            w_start+=1
+
+        w_end=int(width-1)
+        while True:
+            if np.sum(image[int(height/2),int(w_end),:])/d>pixel_thr:
+                break
+            w_end-=1
+
+        h_start=0
+        while True:
+            if np.sum(image[int(h_start),int(width/2),:])/d>pixel_thr:
+                break
+            h_start+=1
+
+        h_end=int(height-1)
+        while True:
+            if np.sum(image[int(h_end),int(width/2),:])/d>pixel_thr:
+                break
+            h_end-=1
+
+        roi = [w_start,h_start,w_end,h_end]
+
+        #print(image[int(height-1),int(width-1),:])
+
+    return image[roi[1]:roi[3],roi[0]:roi[2],:],roi
+
+
+def crop_abn_FD(src_dir,dst_dir):
+    file_list = glob.glob(os.path.join(src_dir,"*.jpg"))
+    roi = None
+    for file_dir in file_list:
+        image = cv2.imdecode(np.fromfile(file_dir, dtype=np.uint8), -1)#cv2.imread(file_dir)
+        #image,roi = crop_img(image)
+        if roi is None:
+            crop_image,roi = CropImg(image)
+        else:
+            crop_image,roi = CropImg(image,roi)
+        #print(roi)
+        #print(crop_image)
+        #cv2.imwrite(os.path.join(dst_dir,os.path.basename(file_dir)),crop_image)
+        cv2.imencode('.jpg', crop_image)[1].tofile(os.path.join(dst_dir,os.path.basename(file_dir)))
+
+
+def get_baiguang_images():
+    record_names = ['v3_baiguang1','v3_baiguang2']
+    root_dir = 'E:/DATASET/放大胃镜/放大胃镜图片筛选/'
+
+    for record_name in record_names:
+        print(record_name)
+        records = open(root_dir+record_name+'.txt',encoding="utf-8")
+
+        record = records.readline()
+
+        while record:
+            record = record.split(' ')
+            record[0] = record[0].replace("\\",'/')
+            if os.path.exists(os.path.join(root_dir,record[0])):
+                try:
+                    image = cv2.imdecode(np.fromfile(os.path.join(root_dir,record[0]), dtype=np.uint8), -1)
+
+                    save_dir = os.path.join(root_dir, record_name, str(record[1][:-1]))
+
+                    if not os.path.exists(save_dir):
+                        os.makedirs(save_dir)
+
+                    #cv2.imwrite(os.path.join(save_dir, os.path.basename(record[0])), image)
+                    cv2.imencode('.jpg', image)[1].tofile(os.path.join(save_dir, os.path.basename(record[0])))
+                except:
+                    print(record[0])
+
+            else:
+                print(os.path.join(root_dir,record[0]))
+
+            record = records.readline()
+    
+
+def cropWithMask():
+    coco = COCO("E:/DATASET/Dental/annotations/test_1_3_crop.json")
+
+    ann_id = 19953
+
+    file_name = coco.imgs[coco.anns[ann_id]["image_id"]]["file_name"]
+
+    file_path = os.path.join("E:/DATASET/Dental","images_crop1",file_name)
+
+    file_path = file_path.replace("\\","/")
+
+    print(file_path)
+
+    image = cv2.imread(file_path)
+
+    seg = coco.anns[ann_id]["segmentation"]
+
+    pts = np.array(seg,dtype=int)
+    pts = pts.reshape((-1,2))
+    
+    rect = cv2.boundingRect(pts)
+    x, y, w, h = rect
+    croped = image[y:y + h, x:x + w].copy()  
+
+    cv2.imwrite("crop.jpg",croped)  
+    
+    pts = pts - pts.min(axis=0)
+    mask = np.zeros(croped.shape[:2], np.uint8)
+    
+    cv2.drawContours(mask, [pts], -1, (255, 255, 255), -1, cv2.LINE_AA)
+    
+    img = cv2.bitwise_and(croped, croped, mask=mask)
+    
+    cv2.imwrite("test.jpg",img)
+
 if __name__=="__main__":
     #change_video_names2()
-    tally_fangdaweijing()
+    #tally_fangdaweijing()
     #get_adenoma("/data3/qilei_chen/DATA/polyp_xinzi/D1_D2")
 
     #generate_clip_frames("E:/DATASET/Camera_motion_estimation/20211027_1626_1631_c_2.42-5.23.avi")
+    #random_rename("E:/DATASET/腺瘤&非腺瘤/val/none_adenoma","E:/DATASET/腺瘤&非腺瘤/val/adenoma")
+
+    #generate_fangdaweijing('E:\DATASET\放大胃镜\放大胃镜图片筛选',['2016_match_lists.log','2018_match_lists.log','2019_match_lists.log','2015_2017_2020_2021_list.log'])
+    
+    #crop_abn_FD("E:/DATASET/放大胃镜/放大胃镜图片筛选/abnormal_roi_images/org2/4","E:/DATASET/放大胃镜/放大胃镜图片筛选/abnormal_roi_images/org2/4_crop")
+    #get_baiguang_images()
+    cropWithMask()
+    pass

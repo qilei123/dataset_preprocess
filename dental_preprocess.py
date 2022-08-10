@@ -101,15 +101,15 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
     temp_annotation = json.load(open(anno_dir))
     coco = COCO(anno_dir)
     temp_annotation["images"] = []
+    max_ann_id = 0
+    #for ann in temp_annotation["annotations"]:
+    #    if max_ann_id < ann["id"]:
+    #        max_ann_id = ann["id"]
+    print(max_ann_id)
     temp_annotation["annotations"] = []
 
-    max_ann_id = 0
-    for ann in temp_annotation["annotations"]:
-        if max_ann_id < ann["id"]:
-            max_ann_id = ann["id"]
-
-    roi_cat_des = {"id": 11, "name": "ROI", "supercategory": ""}
-
+    roi_cat_des = {"id": 1, "name": "ROI", "supercategory": ""}
+    temp_annotation['categories'] = []
     temp_annotation['categories'].append(roi_cat_des)
 
     for ImgId in coco.getImgIds():
@@ -135,7 +135,7 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
             bound_y2 = bound_y2 if bound_y2>ann['bbox'][1]+ann['bbox'][3] else ann['bbox'][1]+ann['bbox'][3]            
 
         
-        image = cv2.imread(os.path.join(imgs_dir,img['file_name']))
+        #image = cv2.imread(os.path.join(imgs_dir,img['file_name']))
         
         if len(anns)>0:
 
@@ -143,18 +143,17 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
         
         else:
 
-            bound_box = [0, 0, image.shape[1], image.shape[0]]
+            bound_box = [0, 0, img['width'], img['height']]
         
         max_ann_id+=1
         
         roi_ann = {"id": max_ann_id, 
                     "image_id": ImgId, 
-                    "category_id": 1, 
-                    "segmentation": [[]], 
-                    "area": 0, 
+                    "category_id": roi_cat_des["id"], 
+                    "segmentation": [],
+                    "area": img['width']*img['height'],
                     "bbox": [], 
-                    "iscrowd": 0, 
-                    "attributes": {"Num": 16.0, "occluded": 0}}
+                    "iscrowd": 0,}
 
         #cropped_image = image[bound_box[1]:bound_box[3],bound_box[0]:bound_box[2]]
         
@@ -162,13 +161,15 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
         #img['width'] = int(bound_box[2]-bound_box[0])
         #img['height'] = int(bound_box[3]-bound_box[1])
 
-        roi_bbox = [bound_box[0],bound_box[1],img['width'],img['height']]
-
+        roi_bbox = [bound_box[0],bound_box[1],int(bound_box[2]-bound_box[0]),int(bound_box[3]-bound_box[1])]
+        
         roi_ann['bbox'] = roi_bbox
+
+        #roi_ann["segmentation"] = [[roi_bbox[0],roi_bbox[1]]]
 
         temp_annotation["images"].append(img)
 
-        for ann in anns:
+        #for ann in anns:
             # fix the bounding box position according to the cropped coordination
             #ann['bbox'][0] = round(ann['bbox'][0]-bound_box[0],2)
             #ann['bbox'][1] = round(ann['bbox'][1]-bound_box[1],2)
@@ -177,7 +178,7 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
             #for idx,xy in enumerate(ann['segmentation'][0]):
             #    ann['segmentation'][0][idx] = round(xy - bound_box[idx%2],2)
             
-            temp_annotation['annotations'].append(ann)
+        #    temp_annotation['annotations'].append(ann)
         
         temp_annotation["annotations"].append(roi_ann)
 
@@ -185,11 +186,10 @@ def generate_dental_roi_with_max_bounds(anno_dir,imgs_dir):
         #os.makedirs(img_dir.replace(os.path.basename(img_dir),''),exist_ok=True)
         #cv2.imwrite(os.path.join(croped_imgs_dir,img['file_name']),cropped_image)            
 
-    with open(anno_dir.replace('.json','_with_roi.json'), 'w') as outfile:
+    with open(anno_dir.replace('.json','_roi.json'), 'w') as outfile:
         json.dump(temp_annotation, outfile)  
 
 if __name__=="__main__":
-    
     # These are for crop1 dataset generating
     '''
     imgs_dir = "/home/qilei/.TEMP/TEETH3/images/"

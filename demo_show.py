@@ -4,14 +4,15 @@ import os
 import skimage.io as io
 import matplotlib.pyplot as plt
 
+dataset_dir = "/home/qilei/.TEMP/TEETH3/"
 
-ann_dir = '/data3/qilei_chen/DATA/trans_drone/annotations/test_AW_obb.json'
+ann_dir = '/home/qilei/.TEMP/TEETH3/annotations/train_1_3_roi.json'
 
-img_folder = '/data3/qilei_chen/DATA/trans_drone/images/'
+img_folder = '/home/qilei/.TEMP/TEETH3/images/'
 
 coco = COCO(ann_dir)
 
-ImgId = 12
+ImgId = 8
 
 img = coco.loadImgs([ImgId])[0]
 
@@ -25,7 +26,7 @@ I = io.imread(img['file_name'])
 plt.imshow(I); plt.axis('off')
 annIds = coco.getAnnIds(imgIds=img['id'])
 anns = coco.loadAnns(annIds)
-coco.showAnns(anns)
+coco.showAnns(anns,draw_bbox=True)
 plt.axis('off')
 plt.imshow(I)
 plt.show()
