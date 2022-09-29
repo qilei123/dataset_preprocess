@@ -368,7 +368,7 @@ def cropWithMask():
 
     file_name = coco.imgs[coco.anns[ann_id]["image_id"]]["file_name"]
 
-    file_path = os.path.join("E:/DATASET/Dental","images_crop1",file_name)
+    file_path = os.path.join+("E:/DATASET/Dental","images_crop1",file_name)
 
     file_path = file_path.replace("\\","/")
 
@@ -396,6 +396,66 @@ def cropWithMask():
     
     cv2.imwrite("test.jpg",img)
 
+def generateFoldConfusionMatrix():
+    
+    dataset_dir ='/home/qilei/.TEMP/FDWJ/v3_3'
+    model_dir = 'work_dir/swin_base_patch4_window7_224-224/'
+    record_name = 'swin_base_patch4_window7_224.csv'
+    print(os.path.join(dataset_dir,model_dir,record_name))
+    record_file = open(os.path.join(dataset_dir,model_dir,record_name))
+
+    line = record_file.readline()    
+
+    while line:
+        print(line)
+        eles = line.split(',')
+
+        dst_dir = os.path.join(dataset_dir,model_dir,'confusion_matrix',eles[1],eles[2])
+
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
+
+        src_dir = os.path.join(dataset_dir,'test',eles[1],eles[0])
+
+        command_str = 'cp '+ src_dir+" "+dst_dir
+
+        os.system(command_str)
+
+        line = record_file.readline()
+
+import json
+from pycocotools.coco import COCO
+import os
+import skimage.io as io
+import matplotlib.pyplot as plt
+def show_gt_wj():
+    dataset_dir = "E:/DATASET/放大胃镜/放大胃镜图片筛选/v3_白光/"
+
+    ann_dir = dataset_dir+'train.json'
+
+    img_folder = dataset_dir
+
+    coco = COCO(ann_dir)
+
+    ImgId = 37
+
+    img = coco.loadImgs([ImgId])[0]
+
+    if 'Wide' in img['file_name']:
+        img['file_name'] = img['file_name'].replace('andover','andover_wide')
+
+    img['file_name'] = os.path.join(img_folder,img['file_name'])
+    I = io.imread(img['file_name'])
+
+
+    plt.imshow(I); plt.axis('off')
+    annIds = coco.getAnnIds(imgIds=img['id'])
+    anns = coco.loadAnns(annIds)
+    coco.showAnns(anns)
+    plt.axis('off')
+    plt.imshow(I)
+    plt.show()    
+
 if __name__=="__main__":
     #change_video_names2()
     #tally_fangdaweijing()
@@ -408,5 +468,8 @@ if __name__=="__main__":
     
     #crop_abn_FD("E:/DATASET/放大胃镜/放大胃镜图片筛选/abnormal_roi_images/org2/4","E:/DATASET/放大胃镜/放大胃镜图片筛选/abnormal_roi_images/org2/4_crop")
     #get_baiguang_images()
-    cropWithMask()
+    #cropWithMask()
+
+    
+    generateFoldConfusionMatrix()
     pass
